@@ -1,6 +1,7 @@
 import streamlit as st
 import requests
 import json
+import os
 from notion_client import Client
 from datetime import date
 
@@ -11,7 +12,16 @@ st.title("🧠 Tactical Command Center")
 st.write(f"**Data:** {date.today().strftime('%A, %d de %B de %Y')}")
 
 # Conexões
-notion = Client(auth=os.environ["NOTION_TOKEN"])
+# Tenta pegar do st.secrets (Nuvem), se não existir, tenta do os.environ (Local)
+try:
+    NOTION_TOKEN = st.secrets["NOTION_TOKEN"]
+    DATABASE_ID = st.secrets["NOTION_DATABASE_ID"]
+except (FileNotFoundError, KeyError):
+    import os
+    NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
+    DATABASE_ID = os.environ.get("NOTION_DATABASE_ID")
+
+notion = Client(auth=NOTION_TOKEN)
 ANKI_URL = "http://localhost:8765"
 
 def get_anki_due_count():
@@ -25,7 +35,7 @@ def get_anki_due_count():
 def get_next_deadline():
     try:
         res = notion.databases.query(
-            database_id=os.environ["NOTION_DATABASE_ID"],
+            database_id=DATABASE_ID,
             filter={"property": "Deadline", "date": {"is_not_empty": True}},
             sorts=[{"property": "Deadline", "direction": "ascending"}]
         )
