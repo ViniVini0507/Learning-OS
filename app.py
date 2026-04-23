@@ -58,6 +58,9 @@ dados_dash = {
     "ibm_date": "15/06/2026"
 }
 
+primary_domain = primary_task
+secondary_domain = "SAP Analytics / Revisão"
+
 # 3. Painéis de Cima (Métricas Rápidas)
 col1, col2, col3 = st.columns(3)
 col1.metric("Anki Flow", f"{dados_dash['anki_total']} Pendentes", "Foco em retenção")
